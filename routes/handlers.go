@@ -26,7 +26,12 @@ func (app *App) Run(port ...int) {
 		listenerPort = "8081"
 	}
 
-	http.ListenAndServe(fmt.Sprintf(":%s", listenerPort), app.Router)
+	v1 := http.NewServeMux()
+
+	// Versioning implementation using http.StripPrefix
+	v1.Handle("/v1/", http.StripPrefix("/v1", app.Router))
+
+	http.ListenAndServe(fmt.Sprintf(":%s", listenerPort), v1)
 }
 
 func (app *App) LoadRoutes() {
